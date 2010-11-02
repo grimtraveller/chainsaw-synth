@@ -1,7 +1,7 @@
 #include "Voice.h"
 	
 Voice::Voice(){
-	vbuf = new Buffer(getMaxBufferSize());
+	vbuf = new Buffer(1024);
 }
 
 Voice::~Voice(){

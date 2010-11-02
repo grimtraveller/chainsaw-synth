@@ -23,7 +23,7 @@
 #define __JUCER_HEADER_OSCGROUPEDITOR_OSCGROUPEDITOR_F2A77112__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "juce.h"
+#include <juce/juce_amalgamated.h>
 //[/Headers]
 
 

@@ -1,6 +1,9 @@
 #include "synthinit.h"
 #include "VoiceManager.h"
 
-void synthInit(){
-	setOutputProcessor(new VoiceManager());
+
+int
+main (int argc, char *argv[])
+{
+	return 0;
 }
