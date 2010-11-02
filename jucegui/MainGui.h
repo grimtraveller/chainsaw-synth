@@ -23,7 +23,7 @@
 #define __JUCER_HEADER_MAINGUI_MAINGUI_408B28EF__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "juce.h"
+#include "juce/juce_amalgamated.h"
 //[/Headers]
 
 #include "OscGroupEditor.h"
