@@ -6,8 +6,8 @@
  * Oscillator type enum
  */
 enum OscType {
-	SINE,
 	SAWTOOTH,
+	SINE,
 	SQUARE,
 	TRIANGLE
 };
