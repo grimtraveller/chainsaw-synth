@@ -17,125 +17,6 @@
 
 #include "JuceProcessor.h"
 
-//==============================================================================
-/** A demo synth sound that's just a basic sine wave.. */
-class SineWaveSound : public SynthesiserSound
-{
-public:
-    SineWaveSound()
-    {
-    }
-
-    bool appliesToNote (const int midiNoteNumber)           { return true; }
-    bool appliesToChannel (const int midiChannel)           { return true; }
-};
-
-//==============================================================================
-/** A simple demo synth voice that just plays a sine wave.. */
-class SineWaveVoice  : public SynthesiserVoice
-{
-public:
-    SineWaveVoice()
-        : angleDelta (0.0),
-          tailOff (0.0)
-    {
-    }
-
-    bool canPlaySound (SynthesiserSound* sound)
-    {
-        return dynamic_cast <SineWaveSound*> (sound) != 0;
-    }
-
-    void startNote (const int midiNoteNumber, const float velocity,
-                    SynthesiserSound* sound, const int currentPitchWheelPosition)
-    {
-        currentAngle = 0.0;
-        level = velocity * 0.15;
-        tailOff = 0.0;
-
-        double cyclesPerSecond = MidiMessage::getMidiNoteInHertz (midiNoteNumber);
-        double cyclesPerSample = cyclesPerSecond / getSampleRate();
-
-        angleDelta = cyclesPerSample * 2.0 * double_Pi;
-    }
-
-    void stopNote (const bool allowTailOff)
-    {
-        if (allowTailOff)
-        {
-            // start a tail-off by setting this flag. The render callback will pick up on
-            // this and do a fade out, calling clearCurrentNote() when it's finished.
-
-            if (tailOff == 0.0) // we only need to begin a tail-off if it's not already doing so - the
-                                // stopNote method could be called more than once.
-                tailOff = 1.0;
-        }
-        else
-        {
-            // we're being told to stop playing immediately, so reset everything..
-
-            clearCurrentNote();
-            angleDelta = 0.0;
-        }
-    }
-
-    void pitchWheelMoved (const int newValue)
-    {
-        // can't be bothered implementing this for the demo!
-    }
-
-    void controllerMoved (const int controllerNumber, const int newValue)
-    {
-        // not interested in controllers in this case.
-    }
-
-    void renderNextBlock (AudioSampleBuffer& outputBuffer, int startSample, int numSamples)
-    {
-        if (angleDelta != 0.0)
-        {
-            if (tailOff > 0)
-            {
-                while (--numSamples >= 0)
-                {
-                    const float currentSample = (float) (sin (currentAngle) * level * tailOff);
-
-                    for (int i = outputBuffer.getNumChannels(); --i >= 0;)
-                        *outputBuffer.getSampleData (i, startSample) += currentSample;
-
-                    currentAngle += angleDelta;
-                    ++startSample;
-
-                    tailOff *= 0.99;
-
-                    if (tailOff <= 0.005)
-                    {
-                        clearCurrentNote();
-
-                        angleDelta = 0.0;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                while (--numSamples >= 0)
-                {
-                    const float currentSample = (float) (sin (currentAngle) * level);
-
-                    for (int i = outputBuffer.getNumChannels(); --i >= 0;)
-                        *outputBuffer.getSampleData (i, startSample) += currentSample;
-
-                    currentAngle += angleDelta;
-                    ++startSample;
-                }
-            }
-        }
-    }
-
-private:
-    double currentAngle, angleDelta, level, tailOff;
-};
-
 
 //==============================================================================
 ChainsawAudioProcessor::ChainsawAudioProcessor()
@@ -167,7 +48,9 @@ ChainsawAudioProcessor::~ChainsawAudioProcessor()
 //==============================================================================
 int ChainsawAudioProcessor::getNumParameters()
 {
-    return 0;
+
+    return 10 + 3 * NUM_OSC_GROUPS;
+
 }
 
 float ChainsawAudioProcessor::getParameter (int index)
@@ -175,6 +58,27 @@ float ChainsawAudioProcessor::getParameter (int index)
     // This method will be called by the host, probably on the audio thread, so
     // it's absolutely time-critical. Don't use critical sections or anything
     // UI-related, or anything at all that may block in any way!
+	switch (index){
+	case 0: return p.vp.stereoSpread;
+	case 1: return p.vp.detune;
+	case 2: return p.vp.octaveSpread;
+	case 3: return p.vp.numosc / 7;
+	case 4: return p.vp.volAttack;
+	case 5: return p.vp.volDecay;
+	case 6: return p.vp.volSustain;
+	case 7: return p.vp.volRelease;
+	case 8: return p.vp.filterResonance;
+	case 9: return p.vp.filterCutoff;
+	default:
+		int parNum = index - 10;
+		int parGroup = parNum / 3;
+		int parIdx = parNum % 3;
+		switch(parIdx){
+		case 0: return p.vp.g[parGroup].type / 3;
+		case 1: return p.vp.g[parGroup].vol;
+		case 2: return (p.vp.g[parGroup].octave + 5) / 10;
+		}
+	}
 	return 0;
 }
 
@@ -183,11 +87,54 @@ void ChainsawAudioProcessor::setParameter (int index, float newValue)
     // This method will be called by the host, probably on the audio thread, so
     // it's absolutely time-critical. Don't use critical sections or anything
     // UI-related, or anything at all that may block in any way!
+	switch (index){
+	case 0: p.vp.stereoSpread = newValue; return;
+	case 1: p.vp.detune = newValue; return;
+	case 2: p.vp.octaveSpread = newValue; return;
+	case 3: p.vp.numosc = newValue * 7; return;
+	case 4: p.vp.volAttack = newValue; return;
+	case 5: p.vp.volDecay = newValue; return;
+	case 6: p.vp.volSustain = newValue; return;
+	case 7: p.vp.volRelease = newValue; return;
+	case 8: p.vp.filterResonance = newValue; return;
+	case 9: p.vp.filterCutoff = newValue; return;
+	default:
+		int parNum = index - 10;
+		int parGroup = parNum / 3;
+		int parIdx = parNum % 3;
+		switch(parIdx){
+		case 0: p.vp.g[parGroup].type = newValue * 3; return;
+		case 1: p.vp.g[parGroup].vol = newValue; return;
+		case 2: p.vp.g[parGroup].octave = newValue * 10 - 5; return;
+		}
+	}
 }
 
 const String ChainsawAudioProcessor::getParameterName (int index)
 {
-    return String::empty;
+	String ret;
+
+	switch (index){
+	case 0: return "Stereo spread";
+	case 1: return "Detune";
+	case 2: return "Octave Spread";
+	case 3: return "Number of oscillators";
+	case 4: return "Volume Attack";
+	case 5: return "Volume Decay";
+	case 6: return "Volume Sustain";
+	case 7: return "Volume Release";;
+	case 8: return "Filter Resonance";
+	case 9: return "Filter Cutoff";
+	default:
+		int parNum = index - 10;
+		int parGroup = parNum / 3;
+		int parIdx = parNum % 3;
+		switch(parIdx){
+		case 0: ret << "OSC " << parGroup << " type"; return ret;
+		case 1: ret << "OSC " << parGroup << " volume"; return ret;
+		case 2: ret << "OSC " << parGroup << " octave"; return ret;
+		}
+	}
 }
 
 const String ChainsawAudioProcessor::getParameterText (int index)
