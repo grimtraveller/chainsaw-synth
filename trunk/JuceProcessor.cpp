@@ -16,7 +16,7 @@
 */
 
 #include "JuceProcessor.h"
-
+#include "jucegui/EditorGUI.h"
 
 //==============================================================================
 ChainsawAudioProcessor::ChainsawAudioProcessor()
@@ -49,7 +49,7 @@ ChainsawAudioProcessor::~ChainsawAudioProcessor()
 int ChainsawAudioProcessor::getNumParameters()
 {
 
-    return 10 + 3 * NUM_OSC_GROUPS;
+    return NUM_CHAINSAW_PARAMETERS;
 
 }
 
@@ -57,7 +57,7 @@ float ChainsawAudioProcessor::getParameter (int index)
 {
     // This method will be called by the host, probably on the audio thread, so
     // it's absolutely time-critical. Don't use critical sections or anything
-    // UI-related, or anything at all that may block in any way!
+    // UI-related, or anything at all that may block in any way
 	switch (index){
 	case 0: return p.vp.stereoSpread;
 	case 1: return p.vp.detune;
@@ -160,8 +160,6 @@ void ChainsawAudioProcessor::releaseResources()
 
 void ChainsawAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-
-
 	MidiBuffer::Iterator mbi(midiMessages);
 	MidiMessage message (0, 0.0);
 	int time;
@@ -192,7 +190,7 @@ void ChainsawAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 //==============================================================================
 AudioProcessorEditor* ChainsawAudioProcessor::createEditor()
 {
-    return 0;
+    return new EditorGUI(this);
 }
 
 //==============================================================================
@@ -202,11 +200,34 @@ void ChainsawAudioProcessor::getStateInformation (MemoryBlock& destData)
     // Here's an example of how you can use XML to make it easy and more robust:
 
     // Create an outer XML element..
-    XmlElement xml ("MYPLUGINSETTINGS");
+    XmlElement xml ("CHAINSAWSETTINGS");
 
     // add some attributes to it..
     xml.setAttribute (T("uiWidth"), lastUIWidth);
     xml.setAttribute (T("uiHeight"), lastUIHeight);
+
+
+	xml.setAttribute(T("stereoSpread"), p.vp.stereoSpread);
+	xml.setAttribute(T("detune"), p.vp.detune);
+	xml.setAttribute(T("numOsc"), p.vp.numosc);
+	xml.setAttribute(T("volAttack"), p.vp.volAttack);
+	xml.setAttribute(T("volDecay"), p.vp.volDecay);
+	xml.setAttribute(T("volSustain"), p.vp.volSustain);
+	xml.setAttribute(T("volRelease"), p.vp.volRelease);
+	xml.setAttribute(T("filterResonance"), p.vp.filterResonance);
+	xml.setAttribute(T("filterCutoff"), p.vp.filterCutoff);
+
+	for (int i = 0; i < NUM_OSC_GROUPS; i++){
+		String paramName;
+		paramName << "oscType" << i;
+		xml.setAttribute(paramName, p.vp.filterCutoff);
+
+		paramName << "oscVolume" << i;
+		xml.setAttribute(paramName, p.vp.g[i].vol);
+
+		paramName << "oscOctave" << i;
+		xml.setAttribute(paramName, p.vp.g[i].octave);
+	}
 
     // then use this helper function to stuff it into the binary blob and return it..
     copyXmlToBinary (xml, destData);
@@ -223,12 +244,32 @@ void ChainsawAudioProcessor::setStateInformation (const void* data, int sizeInBy
     if (xmlState != 0)
     {
         // make sure that it's actually our type of XML object..
-        if (xmlState->hasTagName (T("MYPLUGINSETTINGS")))
+        if (xmlState->hasTagName (T("CHAINSAWSETTINGS")))
         {
-            // ok, now pull out our parameters..
-            lastUIWidth  = xmlState->getIntAttribute (T("uiWidth"), lastUIWidth);
-            lastUIHeight = xmlState->getIntAttribute (T("uiHeight"), lastUIHeight);
 
+            // ok, now pull out our parameters..
+        	p.vp.stereoSpread  = xmlState->getDoubleAttribute(T("stereoSpread"), p.vp.stereoSpread);
+        	p.vp.detune = xmlState->getDoubleAttribute (T("detune"), p.vp.detune);
+        	p.vp.numosc = xmlState->getIntAttribute (T("numOsc"), p.vp.numosc);
+        	p.vp.volAttack = xmlState->getDoubleAttribute (T("volAttack"), p.vp.volAttack);
+        	p.vp.volDecay = xmlState->getDoubleAttribute (T("volDecay"), p.vp.volDecay);
+        	p.vp.volSustain = xmlState->getDoubleAttribute (T("volSustain"), p.vp.volSustain);
+        	p.vp.volRelease = xmlState->getDoubleAttribute (T("volRelease"), p.vp.volRelease);
+        	p.vp.filterResonance = xmlState->getDoubleAttribute (T("filterResonance"), p.vp.filterResonance);
+        	p.vp.filterCutoff = xmlState->getDoubleAttribute (T("filterCutoff"), p.vp.filterCutoff);
+
+			for (int i = 0; i < NUM_OSC_GROUPS; i++){
+				String paramName;
+				paramName << "oscType" << i;
+				p.vp.g[i].type = xmlState->getIntAttribute (paramName, p.vp.filterCutoff);
+
+				paramName << "oscVolume" << i;
+				p.vp.g[i].vol = xmlState->getDoubleAttribute (paramName, p.vp.g[i].vol);
+
+				paramName << "oscOctave" << i;
+				p.vp.g[i].octave = xmlState->getIntAttribute (paramName, p.vp.g[i].octave);
+
+			}
         }
     }
 }

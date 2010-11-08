@@ -21,6 +21,32 @@
 class ChainsawAudioProcessor  : public AudioProcessor
 {
 public:
+	enum {
+		STEREO_SPREAD,
+		DETUNE,
+		OCTAVE_SPREAD,
+		NUM_OSCILLATORS,
+		VOL_ATTACK,
+		VOL_DECAY,
+		VOL_SUSTAIN,
+		VOL_RELEASE,
+		FILTER_RESONANCE,
+		FILTER_CUTOFF,
+		OSC1_TYPE,
+		OSC1_VOLUME,
+		OSC1_OCTAVE,
+		OSC2_TYPE,
+		OSC2_VOLUME,
+		OSC2_OCTAVE,
+		OSC3_TYPE,
+		OSC3_VOLUME,
+		OSC3_OCTAVE,
+		OSC4_TYPE,
+		OSC4_VOLUME,
+		OSC4_OCTAVE,
+
+		NUM_CHAINSAW_PARAMETERS
+	} ChainsawParams;
     //==============================================================================
     ChainsawAudioProcessor();
     ~ChainsawAudioProcessor();

@@ -3,13 +3,13 @@
 
   This is an automatically generated file created by the Jucer!
 
-  Creation date:  24 May 2009 2:54:57 pm
+  Creation date:  8 Nov 2010 9:19:26pm
 
   Be careful when adding custom code to these files, as only the code within
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Jucer version: 1.11
+  Jucer version: 1.12
 
   ------------------------------------------------------------------------------
 
@@ -19,14 +19,14 @@
   ==============================================================================
 */
 
-#ifndef __JUCER_HEADER_MAINGUI_MAINGUI_408B28EF__
-#define __JUCER_HEADER_MAINGUI_MAINGUI_408B28EF__
+#ifndef __JUCER_HEADER_EDITORGUI_EDITORGUI_2D84150C__
+#define __JUCER_HEADER_EDITORGUI_EDITORGUI_2D84150C__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "juce/juce_amalgamated.h"
+#include "../juce/juce_amalgamated.h"
+#include "JuceProcessor.h"
 //[/Headers]
 
-#include "OscGroupEditor.h"
 
 
 //==============================================================================
@@ -37,14 +37,15 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class MainGui  : public Component,
-                 public SliderListener,
-                 public ButtonListener
+class EditorGUI  : public AudioProcessorEditor,
+                   public SliderListener,
+                   public ComboBoxListener,
+                   public ButtonListener
 {
 public:
     //==============================================================================
-    MainGui ();
-    ~MainGui();
+    EditorGUI (ChainsawAudioProcessor* ownerFilter);
+    ~EditorGUI();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -53,69 +54,56 @@ public:
     void paint (Graphics& g);
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void buttonClicked (Button* buttonThatWasClicked);
 
-    // Binary resources:
-    static const char* screenshot_png;
-    static const int screenshot_pngSize;
 
     //==============================================================================
     juce_UseDebuggingNewOperator
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+    ChainsawAudioProcessor* getProcessor() const {
+		return static_cast<ChainsawAudioProcessor*> (getAudioProcessor());
+	}
+
+    String OscTypes[4];
+
+    int OscType[4];
+
     //[/UserVariables]
 
     //==============================================================================
-    OscGroupEditor* component;
-    OscGroupEditor* component2;
-    OscGroupEditor* component3;
-    OscGroupEditor* component4;
-    Slider* stereoDepth;
-    TextButton* oneOsc;
-    TextButton* fiveOsc;
-    TextButton* threeOsc;
-    TextButton* textButton4;
-    Slider* frequency;
-    Slider* resonance;
-    Slider* filterEffect;
-    Slider* filterAttack;
-    Slider* filterDecay;
-    Slider* filterSustain;
-    Slider* filterRelease;
+    Slider* stereoSpread;
     Label* label;
     Label* label2;
+    Slider* detune;
+    ComboBox* numOsc;
+    Label* numOsc2;
+    Slider* filterCutoff;
     Label* label3;
+    Slider* filterCutoff2;
     Label* label4;
+    TextButton* oscType1;
+    TextButton* oscType2;
+    TextButton* oscType3;
+    TextButton* oscType4;
     Label* label5;
+    Slider* oscVolume1;
+    Slider* oscVolume2;
+    Slider* oscVolume3;
+    Slider* oscVolume4;
     Label* label6;
-    Label* label7;
-    Slider* volAttack;
-    Slider* volDecay;
-    Slider* volSustain;
-    Slider* volRelease;
-    Label* label9;
-    Label* label10;
-    Label* label11;
-    Label* label12;
-    Slider* masterVolume;
-    Label* label13;
-    Slider* panning;
-    Label* label8;
-    Label* label14;
-    Label* label15;
-    Label* label16;
-    Label* label17;
-    Label* label18;
-    Label* label19;
-    Label* label20;
-    Image* internalCachedImage1;
+    Slider* oscOctave1;
+    Slider* oscOctave2;
+    Slider* oscOctave3;
+    Slider* oscOctave4;
 
     //==============================================================================
     // (prevent copy constructor and operator= being generated..)
-    MainGui (const MainGui&);
-    const MainGui& operator= (const MainGui&);
+    EditorGUI (const EditorGUI&);
+    const EditorGUI& operator= (const EditorGUI&);
 };
 
 
-#endif   // __JUCER_HEADER_MAINGUI_MAINGUI_408B28EF__
+#endif   // __JUCER_HEADER_EDITORGUI_EDITORGUI_2D84150C__

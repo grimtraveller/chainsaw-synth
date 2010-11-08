@@ -10,8 +10,8 @@ void VoiceManager::process(Buffer *buf, Parameters *p){
 		}
 	}
 	for(int i = 0; i < buf->size; i++){
-		buf->dataL[i] *= 0.1;
-		buf->dataR[i] *= 0.1;
+		buf->dataL[i] *= 0.5;
+		buf->dataR[i] *= 0.5;
 	}
 
 }
