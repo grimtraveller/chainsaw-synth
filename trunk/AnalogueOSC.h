@@ -5,8 +5,8 @@
 #include "blo/blo.h"
 
 enum AnalogueOscType {
-	SINE,
 	SAWTOOTH,
+	SINE,
 	SQUARE,
 	TRIANGLE
 };

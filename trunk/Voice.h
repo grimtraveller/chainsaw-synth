@@ -2,7 +2,6 @@
 #define VOICE_H 1
 #include "Osc.h"
 #include "SoundProcessor.h"
-#include "synthinit.h"
 #include "ADSR.h"
 #include "MoogVCF.h"
 
