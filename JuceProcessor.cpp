@@ -62,7 +62,7 @@ float ChainsawAudioProcessor::getParameter (int index)
 	case 0: return p.vp.stereoSpread;
 	case 1: return p.vp.detune;
 	case 2: return p.vp.octaveSpread;
-	case 3: return p.vp.numosc / 7;
+	case 3: return p.vp.numosc / 7.0f;
 	case 4: return p.vp.volAttack;
 	case 5: return p.vp.volDecay;
 	case 6: return p.vp.volSustain;
@@ -76,7 +76,7 @@ float ChainsawAudioProcessor::getParameter (int index)
 		switch(parIdx){
 		case 0: return p.vp.g[parGroup].type / 3;
 		case 1: return p.vp.g[parGroup].vol;
-		case 2: return (p.vp.g[parGroup].octave + 5) / 10;
+		case 2: return (p.vp.g[parGroup].octave + 5) / 10.0f;
 		}
 	}
 	return 0;
@@ -87,6 +87,7 @@ void ChainsawAudioProcessor::setParameter (int index, float newValue)
     // This method will be called by the host, probably on the audio thread, so
     // it's absolutely time-critical. Don't use critical sections or anything
     // UI-related, or anything at all that may block in any way!
+	printf("%i, %f\n", index, newValue);
 	switch (index){
 	case 0: p.vp.stereoSpread = newValue; return;
 	case 1: p.vp.detune = newValue; return;
