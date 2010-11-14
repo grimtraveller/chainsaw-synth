@@ -121,7 +121,7 @@ void ChainsawAudioProcessor::setParameter (int index, float newValue)
 		switch(parIdx){
 		case 0: p.vp.g[parGroup].type = newValue * 3; return;
 		case 1: p.vp.g[parGroup].vol = newValue; return;
-		case 2: p.vp.g[parGroup].octave = newValue * 10 - 5; return;
+		case 2: p.vp.g[parGroup].octave = round(newValue * 10 - 5); return;
 		}
 	}
 }
