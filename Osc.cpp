@@ -16,6 +16,7 @@ Osc::Osc(){
 	oldNote = 0; // Remembers last played note, so it wouldn't 
 		     // need to recalculate the pitch on every cycle
 	oldDetune = 0; // Old detune, ditto
+	delay = 0;
 }
 
 void Osc::process(Buffer *buf, Parameters *p) {
@@ -34,6 +35,11 @@ void Osc::process(Buffer *buf, Parameters *p) {
 	// MAIN LOOP
 	// Iterates over the buffer and fills it with oscillator output
 	for(int i = 0; i < buf->size; i++){
+		if(delay > 0) {
+			delay--;
+			continue; // Don't start OSC delay has finished
+		}
+
 		float s; // One sample, we put the calculated sample in thi variable
 		
 		phase += oscStep; // Increase phase by one oscilator step.
@@ -87,8 +93,10 @@ void Osc::process(Buffer *buf, Parameters *p) {
  */
 void Osc::note(Note n){
 	if(n.type == Note::NOTE_ON){ // In case the event is a note on
+		phase = rand() / (double)RAND_MAX;
 		pressedNote = n; // Remember the pressed note in object 
 		active = true; // Mark this oscillator active (not really needed as Voice keeps track of this)
+		delay = n.delay; // If note on has delay, use it to make sound start precise
 		// Nothing else is going on in here, rest is done in processing function
 	} 
 }

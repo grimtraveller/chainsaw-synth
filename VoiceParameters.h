@@ -13,15 +13,22 @@ struct OscGroupParameters {
 struct VoiceParameters {
 	float stereoSpread;
 	float detune;
-	float octaveSpread;
 	int numosc;
 	OscGroupParameters g[NUM_OSC_GROUPS];
+
 	float volAttack;
 	float volDecay;
 	float volSustain;
 	float volRelease;
+
 	float filterCutoff;
 	float filterResonance;
+	float filterADSREffect;
+
+	float filterAttack;
+	float filterDecay;
+	float filterSustain;
+	float filterRelease;
 };
 
 #endif

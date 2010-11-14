@@ -24,7 +24,6 @@ public:
 	enum {
 		STEREO_SPREAD,
 		DETUNE,
-		OCTAVE_SPREAD,
 		NUM_OSCILLATORS,
 		VOL_ATTACK,
 		VOL_DECAY,
@@ -32,6 +31,11 @@ public:
 		VOL_RELEASE,
 		FILTER_RESONANCE,
 		FILTER_CUTOFF,
+		FILTER_ADSR_EFFECT,
+		FILTER_ATTACK,
+		FILTER_DECAY,
+		FILTER_SUSTAIN,
+		FILTER_RELEASE,
 		OSC1_TYPE,
 		OSC1_VOLUME,
 		OSC1_OCTAVE,
@@ -44,7 +48,6 @@ public:
 		OSC4_TYPE,
 		OSC4_VOLUME,
 		OSC4_OCTAVE,
-
 		NUM_CHAINSAW_PARAMETERS
 	} ChainsawParams;
     //==============================================================================

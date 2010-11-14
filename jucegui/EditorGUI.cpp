@@ -3,7 +3,7 @@
 
   This is an automatically generated file created by the Jucer!
 
-  Creation date:  8 Nov 2010 10:04:11pm
+  Creation date:  14 Nov 2010 7:15:13pm
 
   Be careful when adding custom code to these files, as only the code within
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
@@ -59,7 +59,13 @@ EditorGUI::EditorGUI (ChainsawAudioProcessor* ownerFilter)
       volumeAttack (0),
       volumeDecay (0),
       volumeSustain (0),
-      volumeRelease (0)
+      volumeRelease (0),
+      filterAttack (0),
+      filterDecay (0),
+      filterSustain (0),
+      filterRelease (0),
+      filterADSREffect (0),
+      filterADSR (0)
 {
     addAndMakeVisible (stereoSpread = new Slider (T("Stereo Spread")));
     stereoSpread->setRange (0, 1, 0);
@@ -248,6 +254,44 @@ EditorGUI::EditorGUI (ChainsawAudioProcessor* ownerFilter)
     volumeRelease->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     volumeRelease->addListener (this);
 
+    addAndMakeVisible (filterAttack = new Slider (T("Filter Attack")));
+    filterAttack->setRange (0, 1, 0);
+    filterAttack->setSliderStyle (Slider::Rotary);
+    filterAttack->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    filterAttack->addListener (this);
+
+    addAndMakeVisible (filterDecay = new Slider (T("Filter Decay")));
+    filterDecay->setRange (0, 1, 0);
+    filterDecay->setSliderStyle (Slider::Rotary);
+    filterDecay->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    filterDecay->addListener (this);
+
+    addAndMakeVisible (filterSustain = new Slider (T("Filter Sustain")));
+    filterSustain->setRange (0, 1, 0);
+    filterSustain->setSliderStyle (Slider::Rotary);
+    filterSustain->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    filterSustain->addListener (this);
+
+    addAndMakeVisible (filterRelease = new Slider (T("Filter Release")));
+    filterRelease->setRange (0, 1, 0);
+    filterRelease->setSliderStyle (Slider::Rotary);
+    filterRelease->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    filterRelease->addListener (this);
+
+    addAndMakeVisible (filterADSREffect = new Slider (T("Filter ADSR Effect")));
+    filterADSREffect->setRange (-1, 1, 0);
+    filterADSREffect->setSliderStyle (Slider::Rotary);
+    filterADSREffect->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    filterADSREffect->addListener (this);
+
+    addAndMakeVisible (filterADSR = new Label (T("Filter ADSR"),
+                                               T("Filter ADSR")));
+    filterADSR->setFont (Font (15.0000f, Font::plain));
+    filterADSR->setJustificationType (Justification::centredRight);
+    filterADSR->setEditable (false, false, false);
+    filterADSR->setColour (TextEditor::textColourId, Colours::black);
+    filterADSR->setColour (TextEditor::backgroundColourId, Colour (0x0));
+
 
     //[UserPreSize]
     numOsc->setSelectedItemIndex(0, true);
@@ -259,7 +303,7 @@ EditorGUI::EditorGUI (ChainsawAudioProcessor* ownerFilter)
     filterCutoff->setValue(1,false,false);
     //[/UserPreSize]
 
-    setSize (335, 305);
+    setSize (335, 350);
 
     //[Constructor] You can add your own custom stuff here..
     OscTypes[0] = "Saw";
@@ -274,14 +318,21 @@ EditorGUI::EditorGUI (ChainsawAudioProcessor* ownerFilter)
     // Base parameters
     detune->setValue(ownerFilter->p.vp.detune, false, false);
     stereoSpread->setValue(ownerFilter->p.vp.stereoSpread, false, false);
-    filterCutoff->setValue(ownerFilter->p.vp.filterCutoff, false, false);
-    filterCutoff2->setValue(ownerFilter->p.vp.filterResonance, false, false);
+    numOsc->setSelectedItemIndex((ownerFilter->p.vp.numosc - 1) / 2, false);
+
     volumeAttack->setValue(ownerFilter->p.vp.volAttack, false, false);
     volumeDecay->setValue(ownerFilter->p.vp.volDecay, false, false);
     volumeSustain->setValue(ownerFilter->p.vp.volSustain, false, false);
     volumeRelease->setValue(ownerFilter->p.vp.volRelease, false, false);
-    numOsc->setSelectedItemIndex((ownerFilter->p.vp.numosc - 1) / 2, false);
 
+    filterCutoff->setValue(ownerFilter->p.vp.filterCutoff, false, false);
+    filterCutoff2->setValue(ownerFilter->p.vp.filterResonance, false, false);
+    filterADSREffect->setValue(ownerFilter->p.vp.filterADSREffect, false, false);
+
+    filterAttack->setValue(ownerFilter->p.vp.filterAttack, false, false);
+    filterDecay->setValue(ownerFilter->p.vp.filterDecay, false, false);
+    filterSustain->setValue(ownerFilter->p.vp.filterSustain, false, false);
+    filterRelease->setValue(ownerFilter->p.vp.filterRelease, false, false);
 
     oscVolume1->setValue(ownerFilter->p.vp.g[0].vol, false, false);
     oscVolume2->setValue(ownerFilter->p.vp.g[1].vol, false, false);
@@ -335,6 +386,12 @@ EditorGUI::~EditorGUI()
     deleteAndZero (volumeDecay);
     deleteAndZero (volumeSustain);
     deleteAndZero (volumeRelease);
+    deleteAndZero (filterAttack);
+    deleteAndZero (filterDecay);
+    deleteAndZero (filterSustain);
+    deleteAndZero (filterRelease);
+    deleteAndZero (filterADSREffect);
+    deleteAndZero (filterADSR);
 
     //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
@@ -358,31 +415,37 @@ void EditorGUI::resized()
     label->setBounds (8, 16, 112, 24);
     label2->setBounds (8, 48, 112, 24);
     detune->setBounds (128, 48, 192, 24);
-    numOsc->setBounds (136, 80, 72, 24);
+    numOsc->setBounds (136, 80, 56, 24);
     numOsc2->setBounds (8, 80, 112, 24);
-    filterCutoff->setBounds (256, 80, 31, 24);
-    label3->setBounds (208, 80, 48, 24);
-    filterCutoff2->setBounds (288, 80, 31, 24);
-    label4->setBounds (-33, 176, 150, 24);
-    oscType1->setBounds (127, 176, 40, 24);
-    oscType2->setBounds (175, 176, 40, 24);
-    oscType3->setBounds (223, 176, 40, 24);
-    oscType4->setBounds (271, 176, 40, 24);
-    label5->setBounds (-33, 216, 150, 24);
-    oscVolume1->setBounds (127, 208, 40, 40);
-    oscVolume2->setBounds (175, 208, 40, 40);
-    oscVolume3->setBounds (223, 208, 40, 40);
-    oscVolume4->setBounds (271, 208, 40, 40);
-    label6->setBounds (-33, 264, 150, 24);
-    oscOctave1->setBounds (127, 256, 40, 40);
-    oscOctave2->setBounds (175, 256, 40, 40);
-    oscOctave3->setBounds (223, 256, 40, 40);
-    oscOctave4->setBounds (271, 256, 40, 40);
+    filterCutoff->setBounds (240, 80, 31, 24);
+    label3->setBounds (192, 80, 48, 24);
+    filterCutoff2->setBounds (264, 80, 31, 24);
+    label4->setBounds (-32, 224, 150, 24);
+    oscType1->setBounds (128, 224, 40, 24);
+    oscType2->setBounds (176, 224, 40, 24);
+    oscType3->setBounds (224, 224, 40, 24);
+    oscType4->setBounds (272, 224, 40, 24);
+    label5->setBounds (-32, 264, 150, 24);
+    oscVolume1->setBounds (128, 256, 40, 40);
+    oscVolume2->setBounds (176, 256, 40, 40);
+    oscVolume3->setBounds (224, 256, 40, 40);
+    oscVolume4->setBounds (272, 256, 40, 40);
+    label6->setBounds (-32, 304, 150, 24);
+    oscOctave1->setBounds (128, 296, 40, 40);
+    oscOctave2->setBounds (176, 296, 40, 40);
+    oscOctave3->setBounds (224, 296, 40, 40);
+    oscOctave4->setBounds (272, 296, 40, 40);
     volADSR->setBounds (8, 128, 112, 24);
     volumeAttack->setBounds (128, 120, 40, 40);
     volumeDecay->setBounds (176, 120, 40, 40);
     volumeSustain->setBounds (224, 120, 40, 40);
     volumeRelease->setBounds (272, 120, 40, 40);
+    filterAttack->setBounds (128, 160, 40, 40);
+    filterDecay->setBounds (176, 160, 40, 40);
+    filterSustain->setBounds (224, 160, 40, 40);
+    filterRelease->setBounds (272, 160, 40, 40);
+    filterADSREffect->setBounds (288, 80, 31, 24);
+    filterADSR->setBounds (8, 168, 112, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -488,6 +551,36 @@ void EditorGUI::sliderValueChanged (Slider* sliderThatWasMoved)
     	getProcessor()->setParameterNotifyingHost (ChainsawAudioProcessor::VOL_RELEASE, (float) sliderThatWasMoved->getValue());
         //[/UserSliderCode_volumeRelease]
     }
+    else if (sliderThatWasMoved == filterAttack)
+    {
+        //[UserSliderCode_filterAttack] -- add your slider handling code here..
+    	getProcessor()->setParameterNotifyingHost (ChainsawAudioProcessor::FILTER_ATTACK, (float) sliderThatWasMoved->getValue());
+        //[/UserSliderCode_filterAttack]
+    }
+    else if (sliderThatWasMoved == filterDecay)
+    {
+        //[UserSliderCode_filterDecay] -- add your slider handling code here..
+    	getProcessor()->setParameterNotifyingHost (ChainsawAudioProcessor::FILTER_DECAY, (float) sliderThatWasMoved->getValue());
+        //[/UserSliderCode_filterDecay]
+    }
+    else if (sliderThatWasMoved == filterSustain)
+    {
+        //[UserSliderCode_filterSustain] -- add your slider handling code here..
+    	getProcessor()->setParameterNotifyingHost (ChainsawAudioProcessor::FILTER_SUSTAIN, (float) sliderThatWasMoved->getValue());
+        //[/UserSliderCode_filterSustain]
+    }
+    else if (sliderThatWasMoved == filterRelease)
+    {
+        //[UserSliderCode_filterRelease] -- add your slider handling code here..
+    	getProcessor()->setParameterNotifyingHost (ChainsawAudioProcessor::FILTER_RELEASE, (float) sliderThatWasMoved->getValue());
+        //[/UserSliderCode_filterRelease]
+    }
+    else if (sliderThatWasMoved == filterADSREffect)
+    {
+        //[UserSliderCode_filterADSREffect] -- add your slider handling code here..
+    	getProcessor()->setParameterNotifyingHost (ChainsawAudioProcessor::FILTER_ADSR_EFFECT, (float)(sliderThatWasMoved->getValue() + 1) / 2.0f);
+        //[/UserSliderCode_filterADSREffect]
+    }
 
     //[UsersliderValueChanged_Post]
     //[/UsersliderValueChanged_Post]
@@ -573,7 +666,7 @@ BEGIN_JUCER_METADATA
                  parentClasses="public AudioProcessorEditor" constructorParams="ChainsawAudioProcessor* ownerFilter"
                  variableInitialisers="AudioProcessorEditor (ownerFilter)" snapPixels="8"
                  snapActive="1" snapShown="1" overlayOpacity="0.330000013" fixedSize="1"
-                 initialWidth="335" initialHeight="305">
+                 initialWidth="335" initialHeight="350">
   <BACKGROUND backgroundColour="ffffffff"/>
   <SLIDER name="Stereo Spread" id="69472c705df3ed25" memberName="stereoSpread"
           virtualName="" explicitFocusOrder="0" pos="128 16 192 24" min="0"
@@ -594,7 +687,7 @@ BEGIN_JUCER_METADATA
           style="LinearHorizontal" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <COMBOBOX name="Number of Oscillators" id="57b8fbc3d0a3cd79" memberName="numOsc"
-            virtualName="" explicitFocusOrder="0" pos="136 80 72 24" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="136 80 56 24" editable="0"
             layout="33" items="1&#10;3&#10;5&#10;7" textWhenNonSelected=""
             textWhenNoItems="(no choices)"/>
   <LABEL name="new label" id="c67abeaa9e0ad8e1" memberName="numOsc2" virtualName=""
@@ -603,75 +696,75 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="34"/>
   <SLIDER name="Filter Cutoff" id="2728b5fbe3458993" memberName="filterCutoff"
-          virtualName="" explicitFocusOrder="0" pos="256 80 31 24" min="0"
+          virtualName="" explicitFocusOrder="0" pos="240 80 31 24" min="0"
           max="1" int="0" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="2edf594c331ed0f9" memberName="label3" virtualName=""
-         explicitFocusOrder="0" pos="208 80 48 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="192 80 48 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Filter" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="34"/>
   <SLIDER name="Filter Cutoff" id="53239bf0db7742e1" memberName="filterCutoff2"
-          virtualName="" explicitFocusOrder="0" pos="288 80 31 24" min="0"
+          virtualName="" explicitFocusOrder="0" pos="264 80 31 24" min="0"
           max="1" int="0" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="c47f6dfc453c30cb" memberName="label4" virtualName=""
-         explicitFocusOrder="0" pos="-33 176 150 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="-32 224 150 24" edTextCol="ff000000"
          edBkgCol="0" labelText="OSC Type" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="34"/>
   <TEXTBUTTON name="OSC Type" id="6b1cdb1dd01fd63b" memberName="oscType1" virtualName=""
-              explicitFocusOrder="0" pos="127 176 40 24" buttonText="Saw" connectedEdges="0"
+              explicitFocusOrder="0" pos="128 224 40 24" buttonText="Saw" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="OSC Type" id="628b5d03ff358b3" memberName="oscType2" virtualName=""
-              explicitFocusOrder="0" pos="175 176 40 24" buttonText="Saw" connectedEdges="0"
+              explicitFocusOrder="0" pos="176 224 40 24" buttonText="Saw" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="OSC Type" id="f971fad504bffd18" memberName="oscType3" virtualName=""
-              explicitFocusOrder="0" pos="223 176 40 24" buttonText="Saw" connectedEdges="0"
+              explicitFocusOrder="0" pos="224 224 40 24" buttonText="Saw" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="OSC Type" id="42648633940726e1" memberName="oscType4" virtualName=""
-              explicitFocusOrder="0" pos="271 176 40 24" buttonText="Saw" connectedEdges="0"
+              explicitFocusOrder="0" pos="272 224 40 24" buttonText="Saw" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <LABEL name="new label" id="8912b59e10343f54" memberName="label5" virtualName=""
-         explicitFocusOrder="0" pos="-33 216 150 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="-32 264 150 24" edTextCol="ff000000"
          edBkgCol="0" labelText="OSC Volume" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="34"/>
   <SLIDER name="OSC Volume" id="4d7c5223d9c58117" memberName="oscVolume1"
-          virtualName="" explicitFocusOrder="0" pos="127 208 40 40" min="0"
+          virtualName="" explicitFocusOrder="0" pos="128 256 40 40" min="0"
           max="1" int="0" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="OSC Volume" id="3c73ab2abe7209ea" memberName="oscVolume2"
-          virtualName="" explicitFocusOrder="0" pos="175 208 40 40" min="0"
+          virtualName="" explicitFocusOrder="0" pos="176 256 40 40" min="0"
           max="1" int="0" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="OSC Volume" id="2707830e44f89ba8" memberName="oscVolume3"
-          virtualName="" explicitFocusOrder="0" pos="223 208 40 40" min="0"
+          virtualName="" explicitFocusOrder="0" pos="224 256 40 40" min="0"
           max="1" int="0" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="OSC Volume" id="c6a0252ba90fecce" memberName="oscVolume4"
-          virtualName="" explicitFocusOrder="0" pos="271 208 40 40" min="0"
+          virtualName="" explicitFocusOrder="0" pos="272 256 40 40" min="0"
           max="1" int="0" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="7c4c75875acfb049" memberName="label6" virtualName=""
-         explicitFocusOrder="0" pos="-33 264 150 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="-32 304 150 24" edTextCol="ff000000"
          edBkgCol="0" labelText="OSC Octave" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="34"/>
   <SLIDER name="OSC Octave" id="98b876c58e07b658" memberName="oscOctave1"
-          virtualName="" explicitFocusOrder="0" pos="127 256 40 40" min="-5"
+          virtualName="" explicitFocusOrder="0" pos="128 296 40 40" min="-5"
           max="5" int="1" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="OSC Octave" id="1f363711a0525bc4" memberName="oscOctave2"
-          virtualName="" explicitFocusOrder="0" pos="175 256 40 40" min="-5"
+          virtualName="" explicitFocusOrder="0" pos="176 296 40 40" min="-5"
           max="5" int="1" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="OSC Octave" id="5b54b51848c70528" memberName="oscOctave3"
-          virtualName="" explicitFocusOrder="0" pos="223 256 40 40" min="-5"
+          virtualName="" explicitFocusOrder="0" pos="224 296 40 40" min="-5"
           max="5" int="1" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="OSC Octave" id="fc8d4b9cdbe871b3" memberName="oscOctave4"
-          virtualName="" explicitFocusOrder="0" pos="271 256 40 40" min="-5"
+          virtualName="" explicitFocusOrder="0" pos="272 296 40 40" min="-5"
           max="5" int="1" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="VolumeADSR" id="6d7e4bcd97f6128" memberName="volADSR" virtualName=""
@@ -695,10 +788,33 @@ BEGIN_JUCER_METADATA
           virtualName="" explicitFocusOrder="0" pos="272 120 40 40" min="0"
           max="1" int="0" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <SLIDER name="Filter Attack" id="f2089171cb77d0a4" memberName="filterAttack"
+          virtualName="" explicitFocusOrder="0" pos="128 160 40 40" min="0"
+          max="1" int="0" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <SLIDER name="Filter Decay" id="e439c23898120d21" memberName="filterDecay"
+          virtualName="" explicitFocusOrder="0" pos="176 160 40 40" min="0"
+          max="1" int="0" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <SLIDER name="Filter Sustain" id="fea6a36785a4309a" memberName="filterSustain"
+          virtualName="" explicitFocusOrder="0" pos="224 160 40 40" min="0"
+          max="1" int="0" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <SLIDER name="Filter Release" id="8b87c55322d99a7e" memberName="filterRelease"
+          virtualName="" explicitFocusOrder="0" pos="272 160 40 40" min="0"
+          max="1" int="0" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <SLIDER name="Filter ADSR Effect" id="84494311c8eff98c" memberName="filterADSREffect"
+          virtualName="" explicitFocusOrder="0" pos="288 80 31 24" min="-1"
+          max="1" int="0" style="Rotary" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <LABEL name="Filter ADSR" id="e3bd243d37cf5cc5" memberName="filterADSR"
+         virtualName="" explicitFocusOrder="0" pos="8 168 112 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="Filter ADSR" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="34"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
 */
 #endif
-
-

@@ -3,7 +3,7 @@
 
   This is an automatically generated file created by the Jucer!
 
-  Creation date:  8 Nov 2010 10:04:11pm
+  Creation date:  14 Nov 2010 7:15:13pm
 
   Be careful when adding custom code to these files, as only the code within
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
@@ -19,8 +19,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCER_HEADER_EDITORGUI_EDITORGUI_12A85875__
-#define __JUCER_HEADER_EDITORGUI_EDITORGUI_12A85875__
+#ifndef __JUCER_HEADER_EDITORGUI_EDITORGUI_529600A9__
+#define __JUCER_HEADER_EDITORGUI_EDITORGUI_529600A9__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../juce/juce_amalgamated.h"
@@ -103,6 +103,12 @@ private:
     Slider* volumeDecay;
     Slider* volumeSustain;
     Slider* volumeRelease;
+    Slider* filterAttack;
+    Slider* filterDecay;
+    Slider* filterSustain;
+    Slider* filterRelease;
+    Slider* filterADSREffect;
+    Label* filterADSR;
 
     //==============================================================================
     // (prevent copy constructor and operator= being generated..)
@@ -111,4 +117,4 @@ private:
 };
 
 
-#endif   // __JUCER_HEADER_EDITORGUI_EDITORGUI_12A85875__
+#endif   // __JUCER_HEADER_EDITORGUI_EDITORGUI_529600A9__

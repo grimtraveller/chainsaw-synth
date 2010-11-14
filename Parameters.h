@@ -6,7 +6,7 @@
 // Opaque
 struct Parameters {
 	VoiceParameters vp;
-	int sFreq;
+	double sFreq;
 };
 
 #endif

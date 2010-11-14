@@ -1,10 +1,5 @@
 #include "ADSR.h"
-#include <math.h>
-
-double linToLog(double v) {
-        return 1 - log10((1 - v) * 9.0 + 1.0);
-}
-
+#include "util.h"
 
 ADSR::ADSR(){
 	state = ATTACK;
@@ -14,8 +9,10 @@ ADSR::ADSR(){
 
 void ADSR::process(Buffer *buf, Parameters *p){
 	for(int i = 0; i < buf->size; i++){
+		if (delay > 0) delay--;
 		switch(state){
 			case ATTACK:
+		 		if(delay > 0) continue; // Don't process until delay has finished
 				vol += ADSR_STEP(p->vp.volAttack);
 				if(vol >= 1){
 					vol = 1;
@@ -30,6 +27,7 @@ void ADSR::process(Buffer *buf, Parameters *p){
 				}
 				break;
 			case RELEASE:
+				if(delay > 0) break; // Don't start release until delay has finished
 				vol -= ADSR_STEP(p->vp.volRelease);
 				if(vol <= 0){
 					vol = 0;
@@ -47,6 +45,7 @@ void ADSR::process(Buffer *buf, Parameters *p){
 
 void ADSR::note(Note n){
 	if(n.type == Note::NOTE_ON){
+		delay = n.delay;
 		state = ATTACK;
 		vol = 0;
 		active = true;
