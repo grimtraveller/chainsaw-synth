@@ -11,6 +11,7 @@ class Note {
 
 	float note;
 	int velocity;
+	int delay;
 	Type type;
 
 };

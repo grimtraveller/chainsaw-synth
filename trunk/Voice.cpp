@@ -66,6 +66,8 @@ void Voice::process(Buffer *buf, Parameters *p){
 
 void Voice::note(Note n){
 	adsr.note(n);
+	filter.note(n);
+
 	if(n.type == Note::NOTE_ON){
 		curNote = n;
 		active = true;

@@ -9,6 +9,7 @@ class SoundProcessor {
 	
 	protected:
 	bool active;
+	int delay;
 
 	public:
 	virtual void process(Buffer *buf, Parameters *p) { };

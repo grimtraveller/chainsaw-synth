@@ -24,7 +24,6 @@ ChainsawAudioProcessor::ChainsawAudioProcessor()
 {
 	p.vp.stereoSpread = 0;
 	p.vp.detune = 0;
-	p.vp.octaveSpread = 0;
 	p.vp.numosc = 1;
 	for(int i = 0; i < NUM_OSC_GROUPS; i++){
 			p.vp.g[i].type = 0;
@@ -36,8 +35,15 @@ ChainsawAudioProcessor::ChainsawAudioProcessor()
 	p.vp.volDecay = 0;
 	p.vp.volSustain = 1;
 	p.vp.volRelease = 0;
+
+	p.vp.filterAttack = 0;
+	p.vp.filterDecay = 0;
+	p.vp.filterSustain = 1;
+	p.vp.filterRelease = 0;
+
 	p.vp.filterResonance = 0;
 	p.vp.filterCutoff = 1;
+	p.vp.filterADSREffect = 0;
 
 }
 
@@ -68,6 +74,12 @@ float ChainsawAudioProcessor::getParameter (int index)
 	case VOL_RELEASE: return p.vp.volRelease;
 	case FILTER_RESONANCE: return p.vp.filterResonance;
 	case FILTER_CUTOFF: return p.vp.filterCutoff;
+	case FILTER_ADSR_EFFECT: return (p.vp.filterADSREffect + 1) / 2.0f;
+	case FILTER_ATTACK: return p.vp.filterAttack;
+	case FILTER_DECAY: return p.vp.filterDecay;
+	case FILTER_SUSTAIN: return p.vp.filterSustain;
+	case FILTER_RELEASE: return p.vp.filterRelease;
+
 	default:
 		int parNum = index - OSC1_TYPE;
 		int parGroup = parNum / 3;
@@ -97,6 +109,11 @@ void ChainsawAudioProcessor::setParameter (int index, float newValue)
 	case VOL_RELEASE: p.vp.volRelease = newValue; return;
 	case FILTER_RESONANCE: p.vp.filterResonance = newValue; return;
 	case FILTER_CUTOFF: p.vp.filterCutoff = newValue; return;
+	case FILTER_ADSR_EFFECT: p.vp.filterADSREffect = newValue * 2 - 1; return;
+	case FILTER_ATTACK: p.vp.filterAttack = newValue; return;
+	case FILTER_DECAY: p.vp.filterDecay = newValue; return;
+	case FILTER_SUSTAIN: p.vp.filterSustain = newValue; return;
+	case FILTER_RELEASE: p.vp.filterRelease = newValue; return;
 	default:
 		int parNum = index - OSC1_TYPE;
 		int parGroup = parNum / 3;
@@ -123,6 +140,11 @@ const String ChainsawAudioProcessor::getParameterName (int index)
 	case VOL_RELEASE: return "Volume Release";;
 	case FILTER_RESONANCE: return "Filter Resonance";
 	case FILTER_CUTOFF: return "Filter Cutoff";
+	case FILTER_ADSR_EFFECT: return "Filter ADSR Effect";
+	case FILTER_ATTACK: return "Filter Attack";
+	case FILTER_DECAY: return "Filter Decay";
+	case FILTER_SUSTAIN: return "Filter Sustain";
+	case FILTER_RELEASE: return "Filter Release";;
 	default:
 		int parNum = index - OSC1_TYPE;
 		int parGroup = parNum / 3;
@@ -146,6 +168,7 @@ void ChainsawAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     p.sFreq = sampleRate;
+    printf("Sampling frequency: %f", p.sFreq);
     keyboardState.reset();
 }
 
@@ -164,6 +187,7 @@ void ChainsawAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 
     b.size = buffer.getNumSamples();
     vm.process(&b, &p);
+    p.sFreq = getSampleRate();
 
     while(mbi.getNextEvent(message, time)) {
     	if(message.isNoteOnOrOff()){
@@ -175,6 +199,7 @@ void ChainsawAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 			}
 			note.note = message.getNoteNumber();
 			note.velocity = message.getVelocity();
+			note.delay = time;
 			vm.note(note);
     	}
     }
@@ -200,10 +225,6 @@ void ChainsawAudioProcessor::getStateInformation (MemoryBlock& destData)
     // Create an outer XML element..
     XmlElement xml ("CHAINSAWSETTINGS");
 
-    // add some attributes to it..
-    xml.setAttribute (T("uiWidth"), lastUIWidth);
-    xml.setAttribute (T("uiHeight"), lastUIHeight);
-
 	xml.setAttribute(T("stereoSpread"), p.vp.stereoSpread);
 	xml.setAttribute(T("detune"), p.vp.detune);
 	xml.setAttribute(T("numOsc"), p.vp.numosc);
@@ -213,11 +234,16 @@ void ChainsawAudioProcessor::getStateInformation (MemoryBlock& destData)
 	xml.setAttribute(T("volRelease"), p.vp.volRelease);
 	xml.setAttribute(T("filterResonance"), p.vp.filterResonance);
 	xml.setAttribute(T("filterCutoff"), p.vp.filterCutoff);
+	xml.setAttribute(T("filterADSREffect"), p.vp.filterADSREffect);
+	xml.setAttribute(T("filterAttack"), p.vp.filterAttack);
+	xml.setAttribute(T("filterDecay"), p.vp.filterDecay);
+	xml.setAttribute(T("filterSustain"), p.vp.filterSustain);
+	xml.setAttribute(T("filterRelease"), p.vp.filterRelease);
 
 	for (int i = 0; i < NUM_OSC_GROUPS; i++){
 		String paramName;
 		paramName << "oscType" << i;
-		xml.setAttribute(paramName, p.vp.filterCutoff);
+		xml.setAttribute(paramName, p.vp.g[i].type);
 
 		paramName << "oscVolume" << i;
 		xml.setAttribute(paramName, p.vp.g[i].vol);
@@ -254,11 +280,16 @@ void ChainsawAudioProcessor::setStateInformation (const void* data, int sizeInBy
         	p.vp.volRelease = xmlState->getDoubleAttribute (T("volRelease"), p.vp.volRelease);
         	p.vp.filterResonance = xmlState->getDoubleAttribute (T("filterResonance"), p.vp.filterResonance);
         	p.vp.filterCutoff = xmlState->getDoubleAttribute (T("filterCutoff"), p.vp.filterCutoff);
+        	p.vp.filterADSREffect = xmlState->getDoubleAttribute (T("filterADSREffect"), p.vp.filterADSREffect);
+        	p.vp.filterAttack = xmlState->getDoubleAttribute (T("filterAttack"), p.vp.filterAttack);
+        	p.vp.filterDecay = xmlState->getDoubleAttribute (T("filterDecay"), p.vp.filterDecay);
+        	p.vp.filterSustain = xmlState->getDoubleAttribute (T("filterSustain"), p.vp.filterSustain);
+        	p.vp.filterRelease = xmlState->getDoubleAttribute (T("filterRelease"), p.vp.filterRelease);
 
 			for (int i = 0; i < NUM_OSC_GROUPS; i++){
 				String paramName;
 				paramName << "oscType" << i;
-				p.vp.g[i].type = xmlState->getIntAttribute (paramName, p.vp.filterCutoff);
+				p.vp.g[i].type = xmlState->getIntAttribute (paramName, p.vp.g[i].type);
 
 				paramName << "oscVolume" << i;
 				p.vp.g[i].vol = xmlState->getDoubleAttribute (paramName, p.vp.g[i].vol);
