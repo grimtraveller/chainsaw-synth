@@ -110,11 +110,10 @@ public:
 
     //==============================================================================
     juce_UseDebuggingNewOperator
+    Parameters p;
 private:
     VoiceManager vm;
-    Parameters p;
     Buffer b;
-
 };
 
 
