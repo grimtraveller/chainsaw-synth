@@ -59,18 +59,17 @@ float ChainsawAudioProcessor::getParameter (int index)
     // it's absolutely time-critical. Don't use critical sections or anything
     // UI-related, or anything at all that may block in any way
 	switch (index){
-	case 0: return p.vp.stereoSpread;
-	case 1: return p.vp.detune;
-	case 2: return p.vp.octaveSpread;
-	case 3: return p.vp.numosc / 7.0f;
-	case 4: return p.vp.volAttack;
-	case 5: return p.vp.volDecay;
-	case 6: return p.vp.volSustain;
-	case 7: return p.vp.volRelease;
-	case 8: return p.vp.filterResonance;
-	case 9: return p.vp.filterCutoff;
+	case STEREO_SPREAD: return p.vp.stereoSpread;
+	case DETUNE: return p.vp.detune;
+	case NUM_OSCILLATORS: return p.vp.numosc / 7.0f;
+	case VOL_ATTACK: return p.vp.volAttack;
+	case VOL_DECAY: return p.vp.volDecay;
+	case VOL_SUSTAIN: return p.vp.volSustain;
+	case VOL_RELEASE: return p.vp.volRelease;
+	case FILTER_RESONANCE: return p.vp.filterResonance;
+	case FILTER_CUTOFF: return p.vp.filterCutoff;
 	default:
-		int parNum = index - 10;
+		int parNum = index - OSC1_TYPE;
 		int parGroup = parNum / 3;
 		int parIdx = parNum % 3;
 		switch(parIdx){
@@ -89,18 +88,17 @@ void ChainsawAudioProcessor::setParameter (int index, float newValue)
     // UI-related, or anything at all that may block in any way!
 	printf("%i, %f\n", index, newValue);
 	switch (index){
-	case 0: p.vp.stereoSpread = newValue; return;
-	case 1: p.vp.detune = newValue; return;
-	case 2: p.vp.octaveSpread = newValue; return;
-	case 3: p.vp.numosc = newValue * 7; return;
-	case 4: p.vp.volAttack = newValue; return;
-	case 5: p.vp.volDecay = newValue; return;
-	case 6: p.vp.volSustain = newValue; return;
-	case 7: p.vp.volRelease = newValue; return;
-	case 8: p.vp.filterResonance = newValue; return;
-	case 9: p.vp.filterCutoff = newValue; return;
+	case STEREO_SPREAD: p.vp.stereoSpread = newValue; return;
+	case DETUNE: p.vp.detune = newValue; return;
+	case NUM_OSCILLATORS: p.vp.numosc = newValue * 7; return;
+	case VOL_ATTACK: p.vp.volAttack = newValue; return;
+	case VOL_DECAY: p.vp.volDecay = newValue; return;
+	case VOL_SUSTAIN: p.vp.volSustain = newValue; return;
+	case VOL_RELEASE: p.vp.volRelease = newValue; return;
+	case FILTER_RESONANCE: p.vp.filterResonance = newValue; return;
+	case FILTER_CUTOFF: p.vp.filterCutoff = newValue; return;
 	default:
-		int parNum = index - 10;
+		int parNum = index - OSC1_TYPE;
 		int parGroup = parNum / 3;
 		int parIdx = parNum % 3;
 		switch(parIdx){
@@ -116,18 +114,17 @@ const String ChainsawAudioProcessor::getParameterName (int index)
 	String ret;
 
 	switch (index){
-	case 0: return "Stereo spread";
-	case 1: return "Detune";
-	case 2: return "Octave Spread";
-	case 3: return "Number of oscillators";
-	case 4: return "Volume Attack";
-	case 5: return "Volume Decay";
-	case 6: return "Volume Sustain";
-	case 7: return "Volume Release";;
-	case 8: return "Filter Resonance";
-	case 9: return "Filter Cutoff";
+	case STEREO_SPREAD: return "Stereo spread";
+	case DETUNE: return "Detune";
+	case NUM_OSCILLATORS: return "Number of oscillators";
+	case VOL_ATTACK: return "Volume Attack";
+	case VOL_DECAY: return "Volume Decay";
+	case VOL_SUSTAIN: return "Volume Sustain";
+	case VOL_RELEASE: return "Volume Release";;
+	case FILTER_RESONANCE: return "Filter Resonance";
+	case FILTER_CUTOFF: return "Filter Cutoff";
 	default:
-		int parNum = index - 10;
+		int parNum = index - OSC1_TYPE;
 		int parGroup = parNum / 3;
 		int parIdx = parNum % 3;
 		switch(parIdx){
@@ -206,7 +203,6 @@ void ChainsawAudioProcessor::getStateInformation (MemoryBlock& destData)
     // add some attributes to it..
     xml.setAttribute (T("uiWidth"), lastUIWidth);
     xml.setAttribute (T("uiHeight"), lastUIHeight);
-
 
 	xml.setAttribute(T("stereoSpread"), p.vp.stereoSpread);
 	xml.setAttribute(T("detune"), p.vp.detune);

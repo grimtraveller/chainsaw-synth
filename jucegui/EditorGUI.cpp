@@ -270,6 +270,34 @@ EditorGUI::EditorGUI (ChainsawAudioProcessor* ownerFilter)
     OscType[1] = 0;
     OscType[2] = 0;
     OscType[3] = 0;
+
+    // Base parameters
+    detune->setValue(ownerFilter->p.vp.detune, false, false);
+    stereoSpread->setValue(ownerFilter->p.vp.stereoSpread, false, false);
+    filterCutoff->setValue(ownerFilter->p.vp.filterCutoff, false, false);
+    filterCutoff2->setValue(ownerFilter->p.vp.filterResonance, false, false);
+    volumeAttack->setValue(ownerFilter->p.vp.volAttack, false, false);
+    volumeDecay->setValue(ownerFilter->p.vp.volDecay, false, false);
+    volumeSustain->setValue(ownerFilter->p.vp.volSustain, false, false);
+    volumeRelease->setValue(ownerFilter->p.vp.volRelease, false, false);
+    numOsc->setSelectedItemIndex((ownerFilter->p.vp.numosc - 1) / 2, false);
+
+
+    oscVolume1->setValue(ownerFilter->p.vp.g[0].vol, false, false);
+    oscVolume2->setValue(ownerFilter->p.vp.g[1].vol, false, false);
+    oscVolume3->setValue(ownerFilter->p.vp.g[2].vol, false, false);
+    oscVolume4->setValue(ownerFilter->p.vp.g[3].vol, false, false);
+
+    oscType1->setButtonText(OscTypes[ownerFilter->p.vp.g[0].type]);
+	oscType2->setButtonText(OscTypes[ownerFilter->p.vp.g[1].type]);
+	oscType3->setButtonText(OscTypes[ownerFilter->p.vp.g[2].type]);
+	oscType4->setButtonText(OscTypes[ownerFilter->p.vp.g[3].type]);
+
+	oscOctave1->setValue(ownerFilter->p.vp.g[0].octave, false, false);
+	oscOctave2->setValue(ownerFilter->p.vp.g[1].octave, false, false);
+	oscOctave3->setValue(ownerFilter->p.vp.g[2].octave, false, false);
+	oscOctave4->setValue(ownerFilter->p.vp.g[3].octave, false, false);
+
     //[/Constructor]
 }
 
@@ -672,3 +700,5 @@ BEGIN_JUCER_METADATA
 END_JUCER_METADATA
 */
 #endif
+
+
