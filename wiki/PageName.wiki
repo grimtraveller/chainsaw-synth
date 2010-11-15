@@ -1,0 +1,3 @@
+= Manual =
+
+Short overview of the Chainsaw synthesizer.
