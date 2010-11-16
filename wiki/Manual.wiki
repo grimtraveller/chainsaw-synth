@@ -1,5 +1,7 @@
 #labels Manual
-= Manual =
+# A short guide for the plugin functionality.
+
+This document should give you an overview of the plugin features and algorithms behind it. The document may not currently be 100% precise, as it is a work in progress, but we are working on this.
 
 [http://chainsaw-synth.googlecode.com/svn/wiki/chainsaw_screenshot.png]
 
