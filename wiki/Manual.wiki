@@ -5,9 +5,9 @@
 
 Controls
 
-  # [Stereo Spread] - Sets the oscillator stereo spread amount
+  # [StereoSpread Stereo Spread] - Sets the oscillator stereo spread amount
   # [Detune] - Sets the amount of detuning between oscillators.
-  # [NumberOfOsc Number of OSC] - Number of [Oscillator oscillators]
+  # [Oscillator Number of OSC] - Number of [Oscillator oscillators]
   # [Filter Filter Cutoff] - LPF cutoff frequency
   # [Filter Filter Resonance] - LPF Resonance
   # [FilterADSR Filter ADSR Effect] - How much the ADSR effects filter.
