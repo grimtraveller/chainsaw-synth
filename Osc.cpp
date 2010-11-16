@@ -42,7 +42,10 @@ void Osc::process(Buffer *buf, Parameters *p) {
 
 		float s; // One sample, we put the calculated sample in thi variable
 		
-		phase += oscStep; // Increase phase by one oscilator step.
+		phase += oscStep + ((rand() / (float)RAND_MAX - 0.5) * 0.0001);
+		// Increase phase by one oscilator step.
+		// Add a little random to make it more organic.
+
 		if(phase >= 1.0){ // If we have gone over 1.0
 			phase = phase - floorf(phase); // Recalculate it (phase = 1.1, phase = 1.1 - 1 = 0.1)
 		}

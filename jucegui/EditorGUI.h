@@ -3,7 +3,7 @@
 
   This is an automatically generated file created by the Jucer!
 
-  Creation date:  14 Nov 2010 7:15:13pm
+  Creation date:  15 Nov 2010 10:20:34pm
 
   Be careful when adding custom code to these files, as only the code within
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
@@ -19,8 +19,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCER_HEADER_EDITORGUI_EDITORGUI_529600A9__
-#define __JUCER_HEADER_EDITORGUI_EDITORGUI_529600A9__
+#ifndef __JUCER_HEADER_EDITORGUI_EDITORGUI_60B15D59__
+#define __JUCER_HEADER_EDITORGUI_EDITORGUI_60B15D59__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../juce/juce_amalgamated.h"
@@ -57,6 +57,9 @@ public:
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void buttonClicked (Button* buttonThatWasClicked);
 
+    // Binary resources:
+    static const char* chainsawbg_png;
+    static const int chainsawbg_pngSize;
 
     //==============================================================================
     juce_UseDebuggingNewOperator
@@ -109,6 +112,7 @@ private:
     Slider* filterRelease;
     Slider* filterADSREffect;
     Label* filterADSR;
+    Image cachedImage_chainsawbg_png;
 
     //==============================================================================
     // (prevent copy constructor and operator= being generated..)
@@ -117,4 +121,4 @@ private:
 };
 
 
-#endif   // __JUCER_HEADER_EDITORGUI_EDITORGUI_529600A9__
+#endif   // __JUCER_HEADER_EDITORGUI_EDITORGUI_60B15D59__

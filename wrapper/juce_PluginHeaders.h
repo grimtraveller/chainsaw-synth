@@ -24,13 +24,4 @@
 */
 
 #include "juce_IncludeCharacteristics.h"
-
-#if JUCETICE_USE_AMALGAMA
-
-  #include "juce/juce_amalgamated.h"
-#else
-
-  #include "../../../juce.h"
-
-#endif
-
+#include "juce/juce_amalgamated.h"
