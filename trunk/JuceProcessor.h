@@ -11,7 +11,7 @@
 #ifndef __PLUGINPROCESSOR_H_526ED7A9__
 #define __PLUGINPROCESSOR_H_526ED7A9__
 
-#include "../jucegui/JucePluginCharacteristics.h"
+#include "JucePluginCharacteristics.h"
 #include <juce/juce_amalgamated.h>
 #include <VoiceManager.h>
 
@@ -86,6 +86,7 @@ public:
     void setCurrentProgram (int index)                          { }
     const String getProgramName (int index)                     { return String::empty; }
     void changeProgramName (int index, const String& newName)   { }
+    bool hasEditor() const										{ return true; }
 
     //==============================================================================
     void getStateInformation (MemoryBlock& destData);

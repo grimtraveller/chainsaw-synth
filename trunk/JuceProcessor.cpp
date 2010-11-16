@@ -225,20 +225,20 @@ void ChainsawAudioProcessor::getStateInformation (MemoryBlock& destData)
     // Create an outer XML element..
     XmlElement xml ("CHAINSAWSETTINGS");
 
-	xml.setAttribute(T("stereoSpread"), p.vp.stereoSpread);
-	xml.setAttribute(T("detune"), p.vp.detune);
-	xml.setAttribute(T("numOsc"), p.vp.numosc);
-	xml.setAttribute(T("volAttack"), p.vp.volAttack);
-	xml.setAttribute(T("volDecay"), p.vp.volDecay);
-	xml.setAttribute(T("volSustain"), p.vp.volSustain);
-	xml.setAttribute(T("volRelease"), p.vp.volRelease);
-	xml.setAttribute(T("filterResonance"), p.vp.filterResonance);
-	xml.setAttribute(T("filterCutoff"), p.vp.filterCutoff);
-	xml.setAttribute(T("filterADSREffect"), p.vp.filterADSREffect);
-	xml.setAttribute(T("filterAttack"), p.vp.filterAttack);
-	xml.setAttribute(T("filterDecay"), p.vp.filterDecay);
-	xml.setAttribute(T("filterSustain"), p.vp.filterSustain);
-	xml.setAttribute(T("filterRelease"), p.vp.filterRelease);
+	xml.setAttribute("stereoSpread", p.vp.stereoSpread);
+	xml.setAttribute("detune", p.vp.detune);
+	xml.setAttribute("numOsc", p.vp.numosc);
+	xml.setAttribute("volAttack", p.vp.volAttack);
+	xml.setAttribute("volDecay", p.vp.volDecay);
+	xml.setAttribute("volSustain", p.vp.volSustain);
+	xml.setAttribute("volRelease", p.vp.volRelease);
+	xml.setAttribute("filterResonance", p.vp.filterResonance);
+	xml.setAttribute("filterCutoff", p.vp.filterCutoff);
+	xml.setAttribute("filterADSREffect", p.vp.filterADSREffect);
+	xml.setAttribute("filterAttack", p.vp.filterAttack);
+	xml.setAttribute("filterDecay", p.vp.filterDecay);
+	xml.setAttribute("filterSustain", p.vp.filterSustain);
+	xml.setAttribute("filterRelease", p.vp.filterRelease);
 
 	for (int i = 0; i < NUM_OSC_GROUPS; i++){
 		String paramName;
@@ -267,24 +267,24 @@ void ChainsawAudioProcessor::setStateInformation (const void* data, int sizeInBy
     if (xmlState != 0)
     {
         // make sure that it's actually our type of XML object..
-        if (xmlState->hasTagName (T("CHAINSAWSETTINGS")))
+        if (xmlState->hasTagName ("CHAINSAWSETTINGS"))
         {
 
             // ok, now pull out our parameters..
-        	p.vp.stereoSpread  = xmlState->getDoubleAttribute(T("stereoSpread"), p.vp.stereoSpread);
-        	p.vp.detune = xmlState->getDoubleAttribute (T("detune"), p.vp.detune);
-        	p.vp.numosc = xmlState->getIntAttribute (T("numOsc"), p.vp.numosc);
-        	p.vp.volAttack = xmlState->getDoubleAttribute (T("volAttack"), p.vp.volAttack);
-        	p.vp.volDecay = xmlState->getDoubleAttribute (T("volDecay"), p.vp.volDecay);
-        	p.vp.volSustain = xmlState->getDoubleAttribute (T("volSustain"), p.vp.volSustain);
-        	p.vp.volRelease = xmlState->getDoubleAttribute (T("volRelease"), p.vp.volRelease);
-        	p.vp.filterResonance = xmlState->getDoubleAttribute (T("filterResonance"), p.vp.filterResonance);
-        	p.vp.filterCutoff = xmlState->getDoubleAttribute (T("filterCutoff"), p.vp.filterCutoff);
-        	p.vp.filterADSREffect = xmlState->getDoubleAttribute (T("filterADSREffect"), p.vp.filterADSREffect);
-        	p.vp.filterAttack = xmlState->getDoubleAttribute (T("filterAttack"), p.vp.filterAttack);
-        	p.vp.filterDecay = xmlState->getDoubleAttribute (T("filterDecay"), p.vp.filterDecay);
-        	p.vp.filterSustain = xmlState->getDoubleAttribute (T("filterSustain"), p.vp.filterSustain);
-        	p.vp.filterRelease = xmlState->getDoubleAttribute (T("filterRelease"), p.vp.filterRelease);
+        	p.vp.stereoSpread  = xmlState->getDoubleAttribute("stereoSpread", p.vp.stereoSpread);
+        	p.vp.detune = xmlState->getDoubleAttribute ("detune", p.vp.detune);
+        	p.vp.numosc = xmlState->getIntAttribute ("numOsc", p.vp.numosc);
+        	p.vp.volAttack = xmlState->getDoubleAttribute ("volAttack", p.vp.volAttack);
+        	p.vp.volDecay = xmlState->getDoubleAttribute ("volDecay", p.vp.volDecay);
+        	p.vp.volSustain = xmlState->getDoubleAttribute ("volSustain", p.vp.volSustain);
+        	p.vp.volRelease = xmlState->getDoubleAttribute ("volRelease", p.vp.volRelease);
+        	p.vp.filterResonance = xmlState->getDoubleAttribute ("filterResonance", p.vp.filterResonance);
+        	p.vp.filterCutoff = xmlState->getDoubleAttribute ("filterCutoff", p.vp.filterCutoff);
+        	p.vp.filterADSREffect = xmlState->getDoubleAttribute ("filterADSREffect", p.vp.filterADSREffect);
+        	p.vp.filterAttack = xmlState->getDoubleAttribute ("filterAttack", p.vp.filterAttack);
+        	p.vp.filterDecay = xmlState->getDoubleAttribute ("filterDecay", p.vp.filterDecay);
+        	p.vp.filterSustain = xmlState->getDoubleAttribute ("filterSustain", p.vp.filterSustain);
+        	p.vp.filterRelease = xmlState->getDoubleAttribute ("filterRelease", p.vp.filterRelease);
 
 			for (int i = 0; i < NUM_OSC_GROUPS; i++){
 				String paramName;
@@ -342,7 +342,8 @@ bool ChainsawAudioProcessor::producesMidi() const
 
 //==============================================================================
 // This creates new instances of the plugin..
-AudioProcessor* JUCE_CALLTYPE createPluginFilter(const String& commandLine)
+AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+
 {
     return new ChainsawAudioProcessor();
 }

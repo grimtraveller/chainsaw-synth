@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library - "Jules' Utility Class Extensions"
-   Copyright 2004-9 by Raw Material Software Ltd.
+   Copyright 2004-10 by Raw Material Software Ltd.
 
   ------------------------------------------------------------------------------
 
@@ -32,6 +32,7 @@
 #include <Carbon/Carbon.h>
 
 #include "../juce_PluginHeaders.h"
+#include "../juce_PluginHostType.h"
 
 #define ADD_CARBON_BODGE 1   // see note below..
 
@@ -50,6 +51,9 @@ static pascal OSStatus windowVisibilityBodge (EventHandlerCallRef, EventRef e, v
 
     switch (GetEventKind (e))
     {
+    case kEventWindowInit:
+        [hostWindow display];
+        break;
     case kEventWindowShown:
         [hostWindow orderFront: nil];
         break;
@@ -65,7 +69,7 @@ static pascal OSStatus windowVisibilityBodge (EventHandlerCallRef, EventRef e, v
 static void updateComponentPos (Component* const comp)
 {
     HIViewRef dummyView = (HIViewRef) (void*) (pointer_sized_int)
-                            comp->getComponentProperty ("dummyViewRef", false, String::empty).getHexValue64();
+                            comp->getProperties() ["dummyViewRef"].toString().getHexValue64();
 
     HIRect r;
     HIViewGetFrame (dummyView, &r);
@@ -94,7 +98,7 @@ void initialiseMac()
 
 void* attachComponentToWindowRef (Component* comp, void* windowRef)
 {
-    const ScopedAutoReleasePool pool;
+    JUCE_AUTORELEASEPOOL
 
     NSWindow* hostWindow = [[NSWindow alloc] initWithWindowRef: windowRef];
     [hostWindow retain];
@@ -128,12 +132,12 @@ void* attachComponentToWindowRef (Component* comp, void* windowRef)
     HIRect r = { {0, 0}, {comp->getWidth(), comp->getHeight()} };
     HIViewSetFrame (dummyView, &r);
     HIViewAddSubview (parentView, dummyView);
-    comp->setComponentProperty ("dummyViewRef", String::toHexString ((pointer_sized_int) (void*) dummyView));
+    comp->getProperties().set ("dummyViewRef", String::toHexString ((pointer_sized_int) (void*) dummyView));
 
     EventHandlerRef ref;
     const EventTypeSpec kControlBoundsChangedEvent = { kEventClassControl, kEventControlBoundsChanged };
     InstallEventHandler (GetControlEventTarget (dummyView), NewEventHandlerUPP (viewBoundsChangedEvent), 1, &kControlBoundsChangedEvent, (void*) comp, &ref);
-    comp->setComponentProperty ("boundsEventRef", String::toHexString ((pointer_sized_int) (void*) ref));
+    comp->getProperties().set ("boundsEventRef", String::toHexString ((pointer_sized_int) (void*) ref));
 
     updateComponentPos (comp);
 
@@ -157,18 +161,22 @@ void* attachComponentToWindowRef (Component* comp, void* windowRef)
     [pluginWindow orderFront: nil];
 
 #if ADD_CARBON_BODGE
-    // Adds a callback bodge to work around some problems with wrapped
-    // carbon windows..
-    const EventTypeSpec eventsToCatch[] = {
-        { kEventClassWindow, kEventWindowShown },
-        { kEventClassWindow, kEventWindowHidden }
-    };
+    {
+        // Adds a callback bodge to work around some problems with wrapped
+        // carbon windows..
+        const EventTypeSpec eventsToCatch[] = {
+            { kEventClassWindow, kEventWindowInit },
+            { kEventClassWindow, kEventWindowShown },
+            { kEventClassWindow, kEventWindowHidden }
+        };
 
-    InstallWindowEventHandler ((WindowRef) windowRef,
-                               NewEventHandlerUPP (windowVisibilityBodge),
-                               GetEventTypeCount (eventsToCatch), eventsToCatch,
-                               (void*) hostWindow, &ref);
-    comp->setComponentProperty ("carbonEventRef", String::toHexString ((pointer_sized_int) (void*) ref));
+        InstallWindowEventHandler ((WindowRef) windowRef,
+                                   NewEventHandlerUPP (windowVisibilityBodge),
+                                   GetEventTypeCount (eventsToCatch), eventsToCatch,
+                                   (void*) hostWindow, &ref);
+        comp->getProperties().set ("carbonEventRef", String::toHexString ((pointer_sized_int) (void*) ref));
+    }
+
 #endif
 
     return hostWindow;
@@ -177,20 +185,20 @@ void* attachComponentToWindowRef (Component* comp, void* windowRef)
 void detachComponentFromWindowRef (Component* comp, void* nsWindow)
 {
     {
-        const ScopedAutoReleasePool pool;
+        JUCE_AUTORELEASEPOOL
 
         EventHandlerRef ref = (EventHandlerRef) (void*) (pointer_sized_int)
-                                    comp->getComponentProperty ("boundsEventRef", false, String::empty).getHexValue64();
+                                    comp->getProperties() ["boundsEventRef"].toString().getHexValue64();
         RemoveEventHandler (ref);
 
 #if ADD_CARBON_BODGE
         ref = (EventHandlerRef) (void*) (pointer_sized_int)
-                  comp->getComponentProperty ("carbonEventRef", false, String::empty).getHexValue64();
+                  comp->getProperties() ["carbonEventRef"].toString().getHexValue64();
         RemoveEventHandler (ref);
 #endif
 
         HIViewRef dummyView = (HIViewRef) (void*) (pointer_sized_int)
-                                comp->getComponentProperty ("dummyViewRef", false, String::empty).getHexValue64();
+                                comp->getProperties() ["dummyViewRef"].toString().getHexValue64();
 
         if (HIViewIsValid (dummyView))
             CFRelease (dummyView);
@@ -214,12 +222,12 @@ void detachComponentFromWindowRef (Component* comp, void* nsWindow)
         MessageManager::getInstance()->runDispatchLoopUntil (1);
 }
 
-void setNativeHostWindowSize (void* nsWindow, Component* component, int newWidth, int newHeight)
+void setNativeHostWindowSize (void* nsWindow, Component* component, int newWidth, int newHeight, const PluginHostType& host)
 {
     NSWindow* hostWindow = (NSWindow*) nsWindow;
     if (hostWindow != 0)
     {
-        ScopedAutoReleasePool pool;
+        JUCE_AUTORELEASEPOOL
 
         // Can't use the cocoa NSWindow resizing code, or it messes up in Live.
         Rect r;
@@ -230,7 +238,6 @@ void setNativeHostWindowSize (void* nsWindow, Component* component, int newWidth
 
         r.left = r.top = 0;
         InvalWindowRect ((WindowRef) [hostWindow windowRef], &r);
-        //[[hostWindow contentView] setNeedsDisplay: YES];
     }
 }
 
