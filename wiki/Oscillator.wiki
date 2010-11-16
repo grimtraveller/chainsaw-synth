@@ -1,0 +1,14 @@
+#labels Manual
+#Explanation of Chainsaw oscillators
+
+Chainsaw can use maximum of 7 oscillators in each [Voice]. The oscillators are divided into 4 _Oscillator Groups_. Three of the Oscillator groups contain 2 oscillators, first group contains only one.
+
+Oscillators have three parameters, it's only possible to set those by oscillator groups:
+
+  # *Type* - Oscillator waveform, can be one of:
+    # Sawtooth
+    # Sine
+    # Square
+    # Triangle
+  # *Volume* - The volume level of the oscillator
+  # *Octave* - Relative tuning in octaves.
