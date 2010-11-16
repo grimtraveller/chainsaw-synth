@@ -1,5 +1,5 @@
+#summary Explanation of Chainsaw oscillators
 #labels Manual
-# Explanation of Chainsaw oscillators
 
 Chainsaw can use maximum of 7 oscillators in each [Voice]. The oscillators are divided into 4 _Oscillator Groups_. Three of the Oscillator groups contain 2 oscillators, first group contains only one.
 
