@@ -10,3 +10,9 @@ Controls
   # [Filter Filter Cutoff] - LPF cutoff frequency
   # [Filter Filter Resonance] - LPF Resonance
   # [FilterADSR Filter ADSR Effect] - How much the ADSR effects filter.
+  # [VolumeADSR Volume ADSR] - Volume ADSR envelope
+  # [Filter ADSR] - Filter ADSR envelope
+  # [Oscillator Oscillator type] - Selects between Sawtooth, Sine, Square and Triangle waves.
+  # [Oscillator Oscillator volume] - Volume level of each oscillator group.
+  # [Oscillator Oscillator octave] - Pitch of the oscillator group -5 ... +5 octaves
+
