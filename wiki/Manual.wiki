@@ -1,3 +1,4 @@
+#labels Manual
 = Manual =
 
 [http://chainsaw-synth.googlecode.com/svn/wiki/chainsaw_screenshot.png]
@@ -15,4 +16,3 @@ Controls
   # [Oscillator Oscillator type] - Selects between Sawtooth, Sine, Square and Triangle waves.
   # [Oscillator Oscillator volume] - Volume level of each oscillator group.
   # [Oscillator Oscillator octave] - Pitch of the oscillator group -5 ... +5 octaves
-
