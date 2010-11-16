@@ -1,5 +1,5 @@
 #summary A short guide for the plugin functionality.
-#labels Manual
+#labels Manual,Featured
 
 This document should give you an overview of the plugin features and algorithms behind it. The document may not currently be 100% precise, as it is a work in progress, but we are working on this.
 
