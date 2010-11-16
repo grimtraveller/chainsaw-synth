@@ -7,14 +7,14 @@ This document should give you an overview of the plugin features and algorithms 
 
 Controls
 
-  # [StereoSpread Stereo Spread] - Sets the oscillator stereo spread amount
-  # [Detune] - Sets the amount of detuning between oscillators.
-  # [Oscillator Number of OSC] - Number of [Oscillator oscillators]
-  # [Filter Filter Cutoff] - LPF cutoff frequency
-  # [Filter Filter Resonance] - LPF Resonance
-  # [FilterADSR Filter ADSR Effect] - How much the ADSR effects filter.
-  # [VolumeADSR Volume ADSR] - Volume ADSR envelope
-  # [Filter ADSR] - Filter ADSR envelope
-  # [Oscillator Oscillator type] - Selects between Sawtooth, Sine, Square and Triangle waves.
-  # [Oscillator Oscillator volume] - Volume level of each oscillator group.
-  # [Oscillator Oscillator octave] - Pitch of the oscillator group -5 ... +5 octaves
+  # *[StereoSpread Stereo Spread]* - Sets the oscillator stereo spread amount
+  # *[Detune]* - Sets the amount of detuning between oscillators.
+  # *[Oscillator Number of OSC]* - Number of [Oscillator oscillators]
+  # *[Filter Filter Cutoff]* - LPF cutoff frequency
+  # *[Filter Filter Resonance]* - LPF Resonance
+  # *[FilterADSR Filter ADSR Effect]* - How much the ADSR effects filter.
+  # *[VolumeADSR Volume ADSR]* - Volume ADSR envelope
+  # *[Filter ADSR]* - Filter ADSR envelope
+  # *[Oscillator Oscillator type]* - Selects between Sawtooth, Sine, Square and Triangle waves.
+  # *[Oscillator Oscillator volume]* - Volume level of each oscillator group.
+  # *[Oscillator Oscillator octave]* - Pitch of the oscillator group -5 ... +5 octaves
