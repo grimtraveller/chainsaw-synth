@@ -1,0 +1,3 @@
+#summary short explanation of filter device
+
+The filter device is supposedly an implementation of Moog low-pass filter. It cuts off higher frequencies from the selected frequency. The resonance parameter boosts the cutoff frequency. The third parameter sets how much the Filter ADSR effects the filter cutoff parameter.
