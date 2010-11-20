@@ -9,6 +9,7 @@ void VoiceManager::process(Buffer *buf, Parameters *p){
 			voice[i].process(buf, p);	
 		}
 	}
+	// Let's make it bit quieter
 	for(int i = 0; i < buf->size; i++){
 		buf->dataL[i] *= 0.5;
 		buf->dataR[i] *= 0.5;

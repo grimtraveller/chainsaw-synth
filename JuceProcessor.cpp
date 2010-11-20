@@ -168,7 +168,8 @@ void ChainsawAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     p.sFreq = sampleRate;
-    printf("Sampling frequency: %f", p.sFreq);
+    printf("Sampling frequency: %f, samples per block: %i", p.sFreq, samplesPerBlock);
+
     keyboardState.reset();
 }
 
@@ -198,7 +199,7 @@ void ChainsawAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer
 				note.type = Note::NOTE_OFF;
 			}
 			note.note = message.getNoteNumber();
-			note.velocity = message.getVelocity();
+			note.velocity = message.getVelocity() / 127.0f;
 			note.delay = time;
 			vm.note(note);
     	}

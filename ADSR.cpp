@@ -25,6 +25,10 @@ void ADSR::process(Buffer *buf, Parameters *p){
 					vol = p->vp.volSustain;
 					state = SUSTAIN;
 				}
+				if(vol <= 0){
+					vol = 0;
+					active = false;
+				}
 				break;
 			case RELEASE:
 				if(delay > 0) break; // Don't start release until delay has finished
@@ -51,6 +55,7 @@ void ADSR::note(Note n){
 		active = true;
 	} else {
 		state = RELEASE;
+		delay = n.delay;
 	}
 }
 
