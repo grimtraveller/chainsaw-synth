@@ -81,8 +81,8 @@ void Osc::process(Buffer *buf, Parameters *p) {
 		// and 100% volume in one channel when panned to either left or right.
 		//
 		//                   panning_______    vol   velocity_____________________
-		buf->dataL[i] += s * ((pan + 1) * 0.5) * vol * (pressedNote.velocity / 128.0);
-		buf->dataR[i] += s * (1 - ((pan + 1) * 0.5)) * vol * (pressedNote.velocity / 128.0);
+		buf->dataL[i] += s * ((pan + 1) / 2) * vol * pressedNote.velocity;
+		buf->dataR[i] += s * (1 - ((pan + 1) / 2)) * vol * pressedNote.velocity;
 	}	
 }
 

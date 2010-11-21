@@ -17,11 +17,13 @@
 
 #include "JuceProcessor.h"
 #include "jucegui/EditorGUI.h"
+#include "util.h"
 
 //==============================================================================
 ChainsawAudioProcessor::ChainsawAudioProcessor()
 	: b(32000)
 {
+	calculateLUTs();
 	p.vp.stereoSpread = 0;
 	p.vp.detune = 0;
 	p.vp.numosc = 1;

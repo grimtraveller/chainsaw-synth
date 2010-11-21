@@ -1,13 +1,18 @@
 #include "MoogVCF.h"
 #include "util.h"
 
-#define ADSR_STEP(param) (1 / (p->sFreq * (param * 2) + 100))
-
 // Constructor
 MoogVCF::MoogVCF(){
 	state = DONE;
 	delay = 0;
 	reset();
+}
+
+inline float MoogVCF::adsrStep(float param, Parameters *p) {
+	if (prevpar!=param){
+		prevcalc = 1 / (p->sFreq * linToLog(param) * 10 + 100);
+	}
+	return prevcalc;
 }
 
 void MoogVCF::reset(){
@@ -29,14 +34,14 @@ void MoogVCF::process(Buffer *buf, Parameters *p)
  		switch(state){
 			case ATTACK:
 		 		if(delay > 0) continue; // Don't process until delay has finished
-				adsrFlt += ADSR_STEP(p->vp.filterAttack);
+				adsrFlt += adsrStep(p->vp.filterAttack, p);
 				if(adsrFlt >= 1){
 					adsrFlt = 1;
 					state = DECAY;
 				}
 				break;
 			case DECAY:
-				adsrFlt -= ADSR_STEP(p->vp.filterDecay);
+				adsrFlt -= adsrStep(p->vp.filterDecay, p);
 				if(adsrFlt <= p->vp.filterSustain){
 					adsrFlt = p->vp.filterSustain;
 					state = SUSTAIN;
@@ -44,7 +49,7 @@ void MoogVCF::process(Buffer *buf, Parameters *p)
 				break;
 			case RELEASE:
 				if(delay > 0) break; // Don't start release until delay has finished
-				adsrFlt -= ADSR_STEP(p->vp.filterRelease);
+				adsrFlt -= adsrStep(p->vp.filterRelease, p);
 				if(adsrFlt <= 0){
 					adsrFlt = 0;
 					state = DONE;
