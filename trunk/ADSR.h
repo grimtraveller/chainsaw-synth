@@ -5,6 +5,9 @@
 class ADSR : public SoundProcessor {
 	
 	float vol;
+	float curvol;
+	float prevpar;
+	float prevcalc;
 
 	enum State {
 		ATTACK,
@@ -14,6 +17,8 @@ class ADSR : public SoundProcessor {
 	};
 
 	State state;
+
+	inline float adsrStep(float param, Parameters *p);
 
 	public:
 	ADSR();

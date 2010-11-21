@@ -53,13 +53,10 @@ void Voice::process(Buffer *buf, Parameters *p){
 
 	adsr.process(vbuf, p);
 	if(!adsr.isActive()){
-		active = false; //Unactivate
+		active = false; // Deactivate
 	}
 
 	filter.process(vbuf, p);
-
-	// TODO: FILTER
-	// TODO: UNACTIVATE
 
 	buf->mixFrom(vbuf);
 }

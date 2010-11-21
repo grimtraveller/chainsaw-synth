@@ -17,6 +17,10 @@ class MoogVCF : public SoundProcessor {
 
 	int state;
 	float adsrFlt;
+	float prevpar;
+	float prevcalc;
+
+	inline float adsrStep(float param, Parameters *p);
 
 	public:
 	
