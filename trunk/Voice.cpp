@@ -12,20 +12,20 @@ void Voice::process(Buffer *buf, Parameters *p){
 	vbuf->clear();
 	vbuf->size = buf->size;
 	// Center oscillator
-	Osc &o = osc[0];
+	/*Osc &o = osc[0];
 	
 	o.type = (OscType)p->vp.g[0].type;
 	o.detune = p->vp.g[0].octave * 12;
 	o.vol = p->vp.g[0].vol;
 
-	o.process(vbuf, p);
+	o.process(vbuf, p);*/
 	
 	// Other layers (come in pairs)
-	int layers = ((p->vp.numosc - 1) / 2);
+	int layers = p->vp.numosc / 2;
 	for(int i = 0; i < layers; i++){
-		Osc &lo = osc[2 * i + 1];
-		Osc &ro = osc[2 * i + 2];
-		OscGroupParameters ogp = p->vp.g[i + 1];
+		Osc &lo = osc[2 * i];
+		Osc &ro = osc[2 * i + 1];
+		OscGroupParameters ogp = p->vp.g[i];
 		
 		// Type same for both osc
 		ro.type = lo.type = (OscType)ogp.type;

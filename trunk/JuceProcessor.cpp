@@ -26,7 +26,7 @@ ChainsawAudioProcessor::ChainsawAudioProcessor()
 	calculateLUTs();
 	p.vp.stereoSpread = 0;
 	p.vp.detune = 0;
-	p.vp.numosc = 1;
+	p.vp.numosc = 2;
 	for(int i = 0; i < NUM_OSC_GROUPS; i++){
 			p.vp.g[i].type = 0;
 			p.vp.g[i].vol = 0.5;
@@ -69,7 +69,7 @@ float ChainsawAudioProcessor::getParameter (int index)
 	switch (index){
 	case STEREO_SPREAD: return p.vp.stereoSpread;
 	case DETUNE: return p.vp.detune;
-	case NUM_OSCILLATORS: return p.vp.numosc / 7.0f;
+	case NUM_OSCILLATORS: return p.vp.numosc / (float)NUM_OSC;
 	case VOL_ATTACK: return p.vp.volAttack;
 	case VOL_DECAY: return p.vp.volDecay;
 	case VOL_SUSTAIN: return p.vp.volSustain;
@@ -104,7 +104,7 @@ void ChainsawAudioProcessor::setParameter (int index, float newValue)
 	switch (index){
 	case STEREO_SPREAD: p.vp.stereoSpread = newValue; return;
 	case DETUNE: p.vp.detune = newValue; return;
-	case NUM_OSCILLATORS: p.vp.numosc = newValue * 7; return;
+	case NUM_OSCILLATORS: p.vp.numosc = newValue * NUM_OSC; return;
 	case VOL_ATTACK: p.vp.volAttack = newValue; return;
 	case VOL_DECAY: p.vp.volDecay = newValue; return;
 	case VOL_SUSTAIN: p.vp.volSustain = newValue; return;

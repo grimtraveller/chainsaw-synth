@@ -104,10 +104,10 @@ EditorGUI::EditorGUI (ChainsawAudioProcessor* ownerFilter)
     numOsc->setJustificationType (Justification::centredLeft);
     numOsc->setTextWhenNothingSelected (String::empty);
     numOsc->setTextWhenNoChoicesAvailable (T("(no choices)"));
-    numOsc->addItem (T("1"), 1);
-    numOsc->addItem (T("3"), 2);
-    numOsc->addItem (T("5"), 3);
-    numOsc->addItem (T("7"), 4);
+    numOsc->addItem (T("2"), 1);
+    numOsc->addItem (T("4"), 2);
+    numOsc->addItem (T("6"), 3);
+    numOsc->addItem (T("8"), 4);
     numOsc->addListener (this);
 
     addAndMakeVisible (numOsc2 = new Label (T("new label"),
@@ -346,7 +346,8 @@ EditorGUI::EditorGUI (ChainsawAudioProcessor* ownerFilter)
     // Base parameters
     detune->setValue(ownerFilter->p.vp.detune, false, false);
     stereoSpread->setValue(ownerFilter->p.vp.stereoSpread, false, false);
-    numOsc->setSelectedItemIndex((ownerFilter->p.vp.numosc - 1) / 2, false);
+    numOsc->setSelectedItemIndex(ownerFilter->p.vp.numosc / 2 - 1, true);
+    printf("Setting numOsc to: %i\n", ownerFilter->p.vp.numosc);
 
     volumeAttack->setValue(ownerFilter->p.vp.volAttack, false, false);
     volumeDecay->setValue(ownerFilter->p.vp.volDecay, false, false);
@@ -628,14 +629,8 @@ void EditorGUI::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     {
         //[UserComboBoxCode_numOsc] -- add your combo box handling code here..
     	int x = comboBoxThatHasChanged->getSelectedId();
-    	int v;
-    	switch(x){
-			case 1: v = 1; break;
-			case 2: v = 3; break;
-			case 3: v = 5; break;
-			case 4: v = 7; break;
-    	}
-    	getProcessor()->setParameterNotifyingHost (ChainsawAudioProcessor::NUM_OSCILLATORS, (float) (v / 7.0f));
+    	printf("selected id is: %i\n", x);
+    	getProcessor()->setParameterNotifyingHost (ChainsawAudioProcessor::NUM_OSCILLATORS, (float) (x / 4.0f));
         //[/UserComboBoxCode_numOsc]
     }
 
