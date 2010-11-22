@@ -5,7 +5,7 @@
 #include "ADSR.h"
 #include "MoogVCF.h"
 
-#define NUM_OSC 7
+#define NUM_OSC 8
 
 class Voice : public SoundProcessor {
 	Osc osc[NUM_OSC];
